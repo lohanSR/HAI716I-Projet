@@ -81,3 +81,32 @@ def determiner_repli(indexEmotionDemandee: int, indexIntensiteDemandee: int, ind
         return "voisine_2"
 
     raise ValueError("Emotion trouvée trop éloignée pour être un repli valide")
+
+def calculer_chemin_casier(depart: tuple[int, int], arrivee: tuple[int, int]) -> list[str]:
+    """
+    Calcule le chemin pour aller d'un casier à un autre
+    """
+    ligneDepart, colonneDepart = depart
+    ligneArrivee, colonneArrivee = arrivee
+
+    mouvements = []
+
+    while ligneDepart < ligneArrivee:
+        mouvements.append("S")
+        ligneDepart += 1
+
+    while ligneDepart > ligneArrivee:
+        mouvements.append("N")
+        ligneDepart -= 1
+
+    distanceEst = (colonneArrivee - colonneDepart) % 8
+    distanceOuest = (colonneDepart - colonneArrivee) % 8
+
+    if distanceEst <= distanceOuest:
+        for _ in range(distanceEst):
+            mouvements.append("E")
+    else:
+        for _ in range(distanceOuest):
+            mouvements.append("O")
+
+    return mouvements
