@@ -13,23 +13,17 @@ def trouver_emotion(message: str, dictionnaire: dict) -> tuple[str, str] | None:
 
     return None
 
-def calculer_distance_roue(emotion1: str, emotion2: str, emotions: list[str]) -> int:
+def calculer_distance_roue(index1: int, index2: int) -> int:
     """
     Calcule la distance entre deux émotions sur la roue des émotions
     """
-    index1 = emotions.index(emotion1)
-    index2 = emotions.index(emotion2)
-
     diff = abs(index1 - index2)
     return min(diff, 8 - diff)
 
-def calculer_sens(emotion1: str, emotion2: str, emotions: list[str]) -> int:
+def calculer_sens(index1: int, index2: int) -> int:
     """
     Calcule le sens de rotation entre deux émotions sur la roue des émotions
     """
-    index1 = emotions.index(emotion1)
-    index2 = emotions.index(emotion2)
-
     if index1 == index2:
         return 0
 
@@ -51,17 +45,15 @@ def generer_casiers_candidats(emotionDemandee: str, intensiteDemandee: str, emot
 
     candidats = []
 
-    for emotionCandidate in emotions:
-        indexEmotionCandidate = emotions.index(emotionCandidate)
-        distanceEmotion = calculer_distance_roue(emotions[indexEmotion], emotionCandidate, emotions)
+    for indexEmotionCandidate, _ in enumerate(emotions):
+        distanceEmotion = calculer_distance_roue(indexEmotion, indexEmotionCandidate)
 
         if distanceEmotion > 2:
             continue
 
-        sens = calculer_sens(emotions[indexEmotion], emotionCandidate, emotions)
+        sens = calculer_sens(indexEmotion, indexEmotionCandidate)
 
-        for intensiteCandidate in intensites:
-            indexIntensiteCandidate = intensites.index(intensiteCandidate)
+        for indexIntensiteCandidate, _ in enumerate(intensites):
             distanceIntensite = abs(indexIntensiteCandidate - indexIntensite)
 
             cle = (distanceEmotion, distanceIntensite, indexIntensiteCandidate, sens)
@@ -69,3 +61,23 @@ def generer_casiers_candidats(emotionDemandee: str, intensiteDemandee: str, emot
 
     candidats.sort()
     return [candidat[1] for candidat in candidats] # Retourne les positions des casiers
+
+def determiner_repli(indexEmotionDemandee: int, indexIntensiteDemandee: int, indexEmotionTrouvee: int, indexIntensiteTrouvee: int) -> str:
+    """
+    Détermine le type de repli entre deux émotions
+    """
+    distanceEmotion = calculer_distance_roue(indexEmotionDemandee, indexEmotionTrouvee)
+
+    if distanceEmotion == 0:
+        if indexIntensiteDemandee == indexIntensiteTrouvee:
+            return "aucun"
+        else:
+            return "intensite"
+
+    if distanceEmotion == 1:
+        return "voisine_1"
+
+    if distanceEmotion == 2:
+        return "voisine_2"
+
+    raise ValueError("Emotion trouvée trop éloignée pour être un repli valide")
