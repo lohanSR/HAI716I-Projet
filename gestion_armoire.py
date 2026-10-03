@@ -5,8 +5,8 @@ class EtatArmoire:
     Représente l'état de l'armoire
     """
     
-    def __init__(self, casierDepart: tuple[int, int]):
-        self.positionSelecteur = casierDepart
+    def __init__(self, casierDepart):
+        self.positionSelecteur = tuple(casierDepart)
         self.memoire = {}
 
     def appliquer_mouvement_casier(self, direction: str) -> tuple[int, int]:
@@ -26,28 +26,37 @@ class EtatArmoire:
         else:
             raise ValueError(f"Direction inconnue : {direction}")
 
+        if ligne < 0 or ligne > 2:
+            raise ValueError("Déplacement vertical hors de l'armoire")
+
         return (ligne, colonne)
 
-    def deplacer_selecteur(self, cible: tuple[int, int], observer_casier) -> list[str]:
+    def deplacer_selecteur(self, cible: tuple[int, int], observer_casier) -> list[dict]:
         """
         Déplace le sélecteur jusqu'au casier cible et mémorise le contenu des nouveaux casiers rencontrés
-        Retourne la liste des directions effectuées
+        Retourne les étapes du déplacement avec la direction, le casier courant et son contenu avant chaque action.
         """
+        chemin = calculer_chemin_casier(self.positionSelecteur, cible)
+        etapes = []
+
+        for direction in chemin:
+            casierAvant = self.positionSelecteur
+
+            if casierAvant not in self.memoire:
+                self.memoire[casierAvant] = observer_casier(casierAvant)
+
+            contenuAvant = self.memoire[casierAvant]
+
+            etapes.append({
+                "direction": direction,
+                "casier": casierAvant,
+                "contenu": contenuAvant
+            })
+
+            self.positionSelecteur = self.appliquer_mouvement_casier(direction)
+
         if self.positionSelecteur not in self.memoire:
             contenu = observer_casier(self.positionSelecteur)
             self.memoire[self.positionSelecteur] = contenu
 
-        chemin = calculer_chemin_casier(self.positionSelecteur, cible)
-
-        for direction in chemin:
-            self.positionSelecteur = self.appliquer_mouvement_casier(direction)
-
-            if self.positionSelecteur not in self.memoire:
-                contenu = observer_casier(self.positionSelecteur)
-                self.memoire[self.positionSelecteur] = contenu
-
-        return chemin
-        
-
-etatArmoire = EtatArmoire((0, 0))  # Initialisation de l'état de l'armoire avec le casier de départ (0, 0)
-assert etatArmoire.appliquer_mouvement_casier("S") == (1, 0)
+        return etapes
