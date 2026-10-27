@@ -176,6 +176,9 @@ def valider_armoire(armoire: dict) -> None:
         if not isinstance(casier["intensite"], str):
             raise rio.ErreurFichier("Armoire : 'intensite' doit être une chaîne de caractères dans chaque casier")
 
+        if casier["objet"] is not None and not isinstance(casier["objet"], str):
+            raise rio.ErreurFichier("Armoire : 'objet' doit être une chaîne de caractères ou null")
+
         if casier["ligne"] > 2 or casier["ligne"] < 0:
             raise rio.ErreurFichier("Armoire : 'ligne' doit être compris entre 0 et 2 dans chaque casier")
 
@@ -322,3 +325,60 @@ def valider_carte(carte: dict) -> None:
         if resident["id"] in ids_residents:
             raise rio.ErreurFichier(f"Carte : id '{resident['id']}' présent plusieurs fois dans les résidents")
         ids_residents.add(resident["id"])    
+
+def valider_scenario(scenario: dict, carte: dict) -> None:
+    if not isinstance(scenario, dict):
+        raise rio.ErreurFichier("Scénario : doit être un dictionnaire")
+
+    champsObligatoires = [
+        "nom",
+        "carte",
+        "armoire",
+        "demandes"
+    ]
+
+    for champ in champsObligatoires:
+        if champ not in scenario:
+            raise rio.ErreurFichier(f"Scénario : champ '{champ}' manquant")
+
+    if not isinstance(scenario["nom"], str):
+        raise rio.ErreurFichier("Scénario : 'nom' doit être une chaîne de caractères")
+
+    if not isinstance(scenario["carte"], str):
+        raise rio.ErreurFichier("Scénario : 'carte' doit être une chaîne de caractères")
+
+    if not isinstance(scenario["armoire"], str):
+        raise rio.ErreurFichier("Scénario : 'armoire' doit être une chaîne de caractères")
+
+    if not isinstance(scenario["demandes"], list):
+        raise rio.ErreurFichier("Scénario : 'demandes' doit être une liste")
+
+    if scenario["carte"] != carte["nom"]:
+        raise rio.ErreurFichier(f"Scénario : 'carte' doit correspondre au nom de la carte '{carte['nom']}'")
+
+    ids_residents = set(resident["id"] for resident in carte["residents"]) 
+    for demande in scenario["demandes"]:
+        if not isinstance(demande, dict):
+            raise rio.ErreurFichier("Scénario : chaque demande doit être un dictionnaire")
+
+        champsDemandeObligatoires = [
+            "numero",
+            "resident",
+            "message"
+        ]
+
+        for champ in champsDemandeObligatoires:
+            if champ not in demande:
+                raise rio.ErreurFichier(f"Scénario : champ '{champ}' manquant dans une demande")
+
+        if type(demande["numero"]) is not int:
+            raise rio.ErreurFichier("Scénario : 'numero' doit être un entier dans chaque demande")
+
+        if not isinstance(demande["resident"], str):
+            raise rio.ErreurFichier("Scénario : 'resident' doit être une chaîne de caractères dans chaque demande")
+
+        if not isinstance(demande["message"], str):
+            raise rio.ErreurFichier("Scénario : 'message' doit être une chaîne de caractères dans chaque demande")
+
+        if demande["resident"] not in ids_residents:
+            raise rio.ErreurFichier(f"Scénario : 'resident' '{demande['resident']}' n'existe pas dans la carte")
