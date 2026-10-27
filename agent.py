@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 
@@ -9,7 +11,7 @@ from decision import est_adjacent, planifier, premiere_direction
 from logique import calculer_chemin_casier, trouver_emotion
 from memoire import CarteMentale
 from perception import percevoir
-from simulateur import Simulateur
+from simulateur import ActionIllegale, Simulateur
 
 EQUIPE = ["MAHDI Raouf", "SERR Lohan"]
 USAGE = (
@@ -197,8 +199,13 @@ def main(argv: list) -> int:
     agent = Agent(
         vue_publique_carte(carte), vue_publique_armoire(armoire), sim, trace, afficher
     )
-    for demande in scenario["demandes"]:
-        agent.traiter_demande(demande, dictionnaire)
+    try:
+        for demande in scenario["demandes"]:
+            agent.traiter_demande(demande, dictionnaire)
+    except ActionIllegale as erreur:
+        # Bug de l'agent : mieux vaut aucune trace qu'une trace contenant un pas illégal.
+        print(f"erreur : action illégale de l'agent ({erreur})", file=sys.stderr)
+        return 3
 
     try:
         trace.ecrire(argv[4])

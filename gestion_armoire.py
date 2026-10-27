@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from logique import calculer_chemin_casier, determiner_repli, generer_casiers_candidats
 
 class EtatArmoire:

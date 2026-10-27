@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from planification import DIRECTIONS, cases_adjacentes, plus_court_chemin
 
 

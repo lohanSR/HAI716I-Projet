@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import reconfort_io as rio
 
 def valider_dictionnaire(dictionnaire: dict) -> None:

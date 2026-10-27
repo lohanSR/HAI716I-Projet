@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import reconfort_io as rio
 
 def trouver_emotion(message: str, dictionnaire: dict) -> tuple[str, str] | None:

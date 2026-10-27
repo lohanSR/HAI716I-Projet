@@ -4,9 +4,11 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 import reconfort_io as rio
 from agent import main
+from simulateur import ActionIllegale, Simulateur
 from tests.test_navigation import CARTE_MUREE, creer_agent
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -105,6 +107,20 @@ class TestMain(unittest.TestCase):
         ])
         self.assertEqual(code, 1)
         self.assertIn("Scénario", erreurs)
+        self.assertFalse(self.sortie.exists())
+
+    def test_action_illegale_pas_de_trace(self):
+        # Le simulateur refuse le premier PRENDRE, après de vrais pas déjà journalisés.
+        refus = ActionIllegale("PRENDRE refusé (test)")
+        with patch.object(Simulateur, "prendre", side_effect=refus):
+            code, erreurs = lancer([
+                str(RACINE / "cartes" / "appartement_01.json"),
+                str(RACINE / "cartes" / "scenario_01.json"),
+                str(RACINE / "donnees"),
+                str(self.sortie),
+            ])
+        self.assertEqual(code, 3)
+        self.assertIn("action illégale", erreurs)
         self.assertFalse(self.sortie.exists())
 
 
