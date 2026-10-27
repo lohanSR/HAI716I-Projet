@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Sorties de simulation (traces générées par le robot)
+sortie.json
+sorties/
+*.trace.json
+
+# Archive de rendu
+*.zip
+
+ENONCE.pdf
+ROADMAP.md
+PLAN.md
