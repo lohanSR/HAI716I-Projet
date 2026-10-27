@@ -2,6 +2,7 @@ import reconfort_io as rio
 
 def valider_dictionnaire(dictionnaire: dict) -> None:
     """
+    Valide le dictionnaire de mots et d'émotions
     """
     champsObligatoires = [
         "nom",
@@ -34,10 +35,16 @@ def valider_dictionnaire(dictionnaire: dict) -> None:
     if dictionnaire["intensites"] != INTENSITES:
         raise rio.ErreurFichier(f"Dictionnaire : 'intensites' doit être {INTENSITES}")
 
+    if not dictionnaire["nom"].strip():
+        raise rio.ErreurFichier("Dictionnaire : 'nom' ne doit pas être vide")
+
     formes_vues = set()
     for entree in dictionnaire["entrees"]:
         if not isinstance(entree, dict):
             raise rio.ErreurFichier("Dictionnaire : chaque entrée doit être un dictionnaire")
+
+        if not entree["formes"]:
+            raise rio.ErreurFichier("Dictionnaire : 'formes' ne doit pas être vide")
 
         champsEntreeObligatoires = [
             "formes",
@@ -83,11 +90,12 @@ def valider_dictionnaire(dictionnaire: dict) -> None:
         # Mots en double
         for forme in entree["formes"]:
             if forme in formes_vues:
-                raise rio.ErreurFichier(f"Dictionnaire : forme '{forme}' en double dans une entrée")
+                raise rio.ErreurFichier(f"Dictionnaire : forme '{forme}' présente plusieurs fois")
             formes_vues.add(forme)
 
 def valider_armoire(armoire: dict) -> None:
     """
+    Valide le dictionnaire de l'armoire
     """
     champsObligatoires = [
         "nom",
@@ -102,6 +110,9 @@ def valider_armoire(armoire: dict) -> None:
 
     if not isinstance(armoire["nom"], str):
         raise rio.ErreurFichier("Armoire : 'nom' doit être une chaîne de caractères")
+
+    if not armoire["nom"].strip():
+        raise rio.ErreurFichier("Armoire : 'nom' ne doit pas être vide")
 
     if not isinstance(armoire["emotions"], list):
         raise rio.ErreurFichier("Armoire : 'emotions' doit être une liste")
@@ -127,7 +138,7 @@ def valider_armoire(armoire: dict) -> None:
     if len(armoire["casier_depart"]) != 2:
         raise rio.ErreurFichier("Armoire : 'casier_depart' doit contenir exactement deux éléments")
 
-    if not all(isinstance(casier, int) for casier in armoire["casier_depart"]):
+    if not all(type(coord) is int for coord in armoire["casier_depart"]):
         raise rio.ErreurFichier("Armoire : 'casier_depart' doit contenir uniquement des entiers")
 
     if armoire["casier_depart"][0] > 2 or armoire["casier_depart"][0] < 0:
@@ -136,6 +147,7 @@ def valider_armoire(armoire: dict) -> None:
     if armoire["casier_depart"][1] > 7 or armoire["casier_depart"][1] < 0:
         raise rio.ErreurFichier("Armoire : 'casier_depart[1]' doit être compris entre 0 et 7")
 
+    casiers_vus = set()
     for casier in armoire["casiers"]:
         if not isinstance(casier, dict):
             raise rio.ErreurFichier("Armoire : chaque casier doit être un dictionnaire")
@@ -148,11 +160,21 @@ def valider_armoire(armoire: dict) -> None:
             "objet"
         ]
 
-        if not isinstance(casier["ligne"], int):
+        for champ in champsCasierObligatoires:
+            if champ not in casier:
+                raise rio.ErreurFichier(f"Armoire : champ '{champ}' manquant dans un casier")
+
+        if type(casier["ligne"]) is not int:
             raise rio.ErreurFichier("Armoire : 'ligne' doit être un entier dans chaque casier")
 
-        if not isinstance(casier["colonne"], int):
+        if type(casier["colonne"]) is not int:
             raise rio.ErreurFichier("Armoire : 'colonne' doit être un entier dans chaque casier")
+
+        if not isinstance(casier["emotion"], str):
+                    raise rio.ErreurFichier("Armoire : 'emotion' doit être une chaîne de caractères dans chaque casier")
+                
+        if not isinstance(casier["intensite"], str):
+            raise rio.ErreurFichier("Armoire : 'intensite' doit être une chaîne de caractères dans chaque casier")
 
         if casier["ligne"] > 2 or casier["ligne"] < 0:
             raise rio.ErreurFichier("Armoire : 'ligne' doit être compris entre 0 et 2 dans chaque casier")
@@ -160,7 +182,17 @@ def valider_armoire(armoire: dict) -> None:
         if casier["colonne"] > 7 or casier["colonne"] < 0:
             raise rio.ErreurFichier("Armoire : 'colonne' doit être compris entre 0 et 7 dans chaque casier")
 
-        if not isinstance(casier["emotion"], str):
-            raise rio.ErreurFichier("Armoire : 'emotion' doit être une chaîne de caractères dans chaque casier")
+        # emotion et intensité cohérentes avec la position du casier
+        if casier["emotion"] != EMOTIONS[casier["colonne"]]:
+            raise rio.ErreurFichier("Armoire : émotion incohérente avec la colonne")
+
+        if casier["intensite"] != INTENSITES[casier["ligne"]]:
+            raise rio.ErreurFichier("Armoire : intensité incohérente avec la ligne")
+
+        # casiers en double
+        position = (casier["ligne"], casier["colonne"])
+        if position in casiers_vus:
+            raise rio.ErreurFichier(f"Armoire : casier en double à la position {position}")
+        casiers_vus.add(position)
 
         
