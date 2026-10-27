@@ -43,9 +43,6 @@ def valider_dictionnaire(dictionnaire: dict) -> None:
         if not isinstance(entree, dict):
             raise rio.ErreurFichier("Dictionnaire : chaque entrée doit être un dictionnaire")
 
-        if not entree["formes"]:
-            raise rio.ErreurFichier("Dictionnaire : 'formes' ne doit pas être vide")
-
         champsEntreeObligatoires = [
             "formes",
             "emotion",
@@ -58,6 +55,9 @@ def valider_dictionnaire(dictionnaire: dict) -> None:
 
         if not isinstance(entree["formes"], list):
             raise rio.ErreurFichier("Dictionnaire : 'formes' doit être une liste dans chaque entrée")
+
+        if not entree["formes"]:
+            raise rio.ErreurFichier("Dictionnaire : 'formes' ne doit pas être vide")
 
         if not isinstance(entree["emotion"], str):
             raise rio.ErreurFichier("Dictionnaire : 'emotion' doit être une chaîne de caractères dans chaque entrée")
@@ -195,4 +195,130 @@ def valider_armoire(armoire: dict) -> None:
             raise rio.ErreurFichier(f"Armoire : casier en double à la position {position}")
         casiers_vus.add(position)
 
-        
+def valider_carte(carte: dict) -> None:
+    if not isinstance(carte, dict):
+        raise rio.ErreurFichier("Carte : doit être un dictionnaire")
+
+    champsObligatoires = [
+        "nom",
+        "dimensions",
+        "legende",
+        "grille",
+        "depart_robot",
+        "armoire",
+        "dictionnaire",
+        "residents"
+    ]
+
+    for champ in champsObligatoires:
+        if champ not in carte:
+            raise rio.ErreurFichier(f"Carte : champ '{champ}' manquant")
+
+    if not isinstance(carte["nom"], str):
+        raise rio.ErreurFichier("Carte : 'nom' doit être une chaîne de caractères")
+
+    if not isinstance(carte["dimensions"], dict):
+        raise rio.ErreurFichier("Carte : 'dimensions' doit être un dictionnaire")
+
+    if not isinstance(carte["legende"], dict):
+        raise rio.ErreurFichier("Carte : 'legende' doit être un dictionnaire")
+
+    if not isinstance(carte["grille"], list):
+        raise rio.ErreurFichier("Carte : 'grille' doit être une liste")
+
+    if not isinstance(carte["residents"], list):
+        raise rio.ErreurFichier("Carte : 'residents' doit être une liste")
+
+    if "hauteur" not in carte["dimensions"] or "largeur" not in carte["dimensions"]:
+        raise rio.ErreurFichier("Carte : 'dimensions' doit contenir 'hauteur' et 'largeur'")
+
+    if type(carte["dimensions"]["hauteur"]) is not int or type(carte["dimensions"]["largeur"]) is not int:
+        raise rio.ErreurFichier("Carte : 'hauteur' et 'largeur' doivent être des entiers")
+
+    if carte["dimensions"]["hauteur"] <= 0 or carte["dimensions"]["largeur"] <= 0:
+        raise rio.ErreurFichier("Carte : 'hauteur' et 'largeur' doivent être des entiers positifs")
+
+    hauteur = carte["dimensions"]["hauteur"]
+    largeur = carte["dimensions"]["largeur"]
+    grille = carte["grille"]
+
+    if len(grille) != hauteur:
+        raise rio.ErreurFichier("Carte : le nombre de lignes dans 'grille' ne correspond pas à 'hauteur'")
+
+    for ligne in grille:
+        if not isinstance(ligne, str):
+            raise rio.ErreurFichier("Carte : chaque ligne de 'grille' doit être une chaîne de caractères")
+
+        if len(ligne) != largeur:
+            raise rio.ErreurFichier("Carte : La grille n'est pas rectangulaire")
+
+    symbolesAutorises = {"#", ".", "R", "A", "D", "P"}
+    for ligne in grille:
+        for symbole in ligne:
+            if symbole not in symbolesAutorises:
+                raise rio.ErreurFichier(f"Carte : symbole '{symbole}' non autorisé dans la grille")
+
+    # les bordures de la grille doivent être des murs
+    for i in range(hauteur):
+        if grille[i][0] != "#" or grille[i][largeur - 1] != "#": # bords gauche et droit
+            raise rio.ErreurFichier("Carte : les bordures de la grille doivent être des murs")
+
+    for j in range(largeur):
+        if grille[0][j] != "#" or grille[hauteur - 1][j] != "#": # bords haut et bas
+            raise rio.ErreurFichier("Carte : les bordures de la grille doivent être des murs")
+
+    def verifier_position(position: tuple[int, int], symboleAttendu: str, nom: str) -> None:
+        if not isinstance(position, (list, tuple)) or len(position) != 2:
+            raise rio.ErreurFichier(f"{nom} : position doit être un tuple ou une liste de deux entiers")
+
+        if not all(type(coord) is int for coord in position):
+            raise rio.ErreurFichier(f"{nom} : position doit contenir uniquement des entiers")
+
+        ligne, colonne = position
+
+        if ligne < 0 or ligne >= hauteur or colonne < 0 or colonne >= largeur:
+            raise rio.ErreurFichier(f"{nom} : position hors limites de la grille")
+
+        if grille[ligne][colonne] != symboleAttendu:
+            raise rio.ErreurFichier(f"{nom} : position ne correspond pas au symbole attendu '{symboleAttendu}' dans la grille")
+
+    verifier_position(carte["depart_robot"], "R", "Robot")
+
+    if not isinstance(carte["armoire"], dict):
+        raise rio.ErreurFichier("Carte : 'armoire' doit être un dictionnaire")
+
+    if "position" not in carte["armoire"]:
+        raise rio.ErreurFichier("Carte : 'armoire' doit contenir 'position'")
+
+    verifier_position(carte["armoire"]["position"], "A", "Armoire")
+
+    if not isinstance(carte["dictionnaire"], dict):
+        raise rio.ErreurFichier("Carte : 'dictionnaire' doit être un dictionnaire")
+
+    if "position" not in carte["dictionnaire"]:
+        raise rio.ErreurFichier("Carte : 'dictionnaire' doit contenir 'position'")
+
+    verifier_position(carte["dictionnaire"]["position"], "D", "Dictionnaire")
+
+    ids_residents = set()
+    for resident in carte["residents"]:
+        if not isinstance(resident, dict):
+            raise rio.ErreurFichier("Carte : chaque résident doit être un dictionnaire")
+
+        champsResidentObligatoires = ["id", "nom", "position"]
+
+        for champ in champsResidentObligatoires:
+            if champ not in resident:
+                raise rio.ErreurFichier(f"Carte : champ '{champ}' manquant dans un résident")
+
+        if not isinstance(resident["id"], str):
+            raise rio.ErreurFichier("Carte : 'id' doit être une chaîne de caractères dans chaque résident")
+
+        if not isinstance(resident["nom"], str):
+            raise rio.ErreurFichier("Carte : 'nom' doit être une chaîne de caractères dans chaque résident")
+
+        verifier_position(resident["position"], "P", f"resident {resident['id']}")
+
+        if resident["id"] in ids_residents:
+            raise rio.ErreurFichier(f"Carte : id '{resident['id']}' présent plusieurs fois dans les résidents")
+        ids_residents.add(resident["id"])    
