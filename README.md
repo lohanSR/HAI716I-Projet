@@ -33,7 +33,10 @@ Dépendances : *aucune*, ou la liste et comment les installer.
 
 ## État
 
-**Ce qui marche.** *À compléter.*
+**Ce qui marche.**
+- Validation des fichiers JSON (carte, scénario, dictionnaire et armoire)
+- Reconnaissance des émotions et intensité à partir des messages
+- Recherche d'objets dans l'armoire en respectant l'ordre de priorité des casiers et les règles de repli
 
 **Ce qui ne marche pas.** *À compléter — soyez honnêtes, c'est noté en
 votre faveur.*

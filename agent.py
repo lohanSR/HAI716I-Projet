@@ -14,7 +14,7 @@ from memoire import CarteMentale
 from perception import percevoir
 from simulateur import ActionIllegale, Simulateur
 
-EQUIPE = ["MAHDI Raouf", "SERR Lohan"]
+EQUIPE = ["MAHDI Raouf", "SERRE Lohan"]
 USAGE = (
     "usage : python agent.py <carte> <scenario> <dossier_donnees> <trace> [--afficher]"
 )
