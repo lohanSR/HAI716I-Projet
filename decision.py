@@ -4,6 +4,7 @@ from planification import DIRECTIONS, cases_adjacentes, plus_court_chemin
 
 
 def est_adjacent(position: tuple[int, int], cible: tuple[int, int]) -> bool:
+    """Vrai si position et cible sont voisines orthogonales (distance de Manhattan 1)."""
     return abs(position[0] - cible[0]) + abs(position[1] - cible[1]) == 1
 
 

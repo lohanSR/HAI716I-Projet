@@ -23,6 +23,7 @@ CARTES_CASSEES = [
     ("carte_json_invalide.json", "pas un JSON valide"),
     ("carte_format.json", "format attendu"),
     ("carte_version.json", "version 1 attendue"),
+    ("carte_version_booleen.json", "version 1 attendue, trouve True"),
     ("carte_champ_absent.json", "champ 'residents' manquant"),
     ("carte_mauvais_type.json", "doivent être des entiers"),
     ("carte_non_rectangulaire.json", "pas rectangulaire"),
@@ -72,6 +73,9 @@ class TestFichiersCasses(unittest.TestCase):
             donnees.mkdir()
             shutil.copy(dictionnaire, donnees / "dictionnaire.json")
             shutil.copy(armoire, donnees / "armoire_standard.json")
+        # sinon la trace d'un fichier accepté à tort ferait échouer tous les sous-tests suivants
+        if self.trace.exists():
+            self.trace.unlink()
         env = dict(os.environ)
         env["PYTHONIOENCODING"] = "utf-8"
         commande = [sys.executable, "agent.py", str(carte), str(scenario), str(donnees), str(self.trace)]

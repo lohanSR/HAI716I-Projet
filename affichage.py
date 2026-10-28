@@ -35,7 +35,7 @@ def dessiner(memoire, position: tuple[int, int], chemin: list | None = None) -> 
     return "\n".join(lignes)
 
 
-def afficher(memoire, position, chemin=None, entete: str = "", delai: float = 0.15) -> None:
+def afficher(memoire, position, chemin=None, entete: str = "", delai: float = 0.3) -> None:
     """Efface le terminal, redessine la carte mentale puis attend delai secondes."""
     print(EFFACER_ECRAN + entete)
     print(dessiner(memoire, position, chemin))

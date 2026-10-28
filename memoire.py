@@ -29,6 +29,7 @@ class CarteMentale:
             self.marquer(tuple(residents[identifiant]), "resident")
 
     def dans_grille(self, pos: tuple[int, int]) -> bool:
+        """Vrai si pos est dans les dimensions de la carte."""
         return 0 <= pos[0] < self.hauteur and 0 <= pos[1] < self.largeur
 
     def type_case(self, pos: tuple[int, int]) -> str:
@@ -38,6 +39,7 @@ class CarteMentale:
         return self.cases[pos[0]][pos[1]]
 
     def marquer(self, pos: tuple[int, int], type_case: str) -> None:
+        """Mémorise le type d'une case (ignoré hors grille)."""
         if self.dans_grille(pos):
             self.cases[pos[0]][pos[1]] = type_case
 

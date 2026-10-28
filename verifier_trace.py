@@ -52,6 +52,7 @@ class Verificateur:
         return self.erreurs
 
     def verifier_entete(self) -> None:
+        """Noms de carte et de scénario, équipe non vide."""
         if self.trace["carte"] != self.carte["nom"]:
             self.erreurs.append(f"entête : carte {self.trace['carte']}, attendu {self.carte['nom']}")
         if self.trace["scenario"] != self.scenario["nom"]:
@@ -96,6 +97,7 @@ class Verificateur:
             )
 
     def noter_pas(self, bilan: dict, pas: dict, t: int) -> None:
+        """Retient dans le bilan de la demande les casiers vus et les t de CONSULTER / PRENDRE / DONNER."""
         # §6.2 : un casier « vu » = le sélecteur y était pendant un pas devant l'armoire.
         if self.sim.adjacent_a(self.sim.pos_armoire):
             bilan["vus"].add(self.sim.selecteur)
@@ -110,6 +112,7 @@ class Verificateur:
             bilan["donner"] = t
 
     def verifier_livraisons(self) -> None:
+        """Une livraison par demande, dans l'ordre du scénario."""
         demandes = self.scenario["demandes"]
         livraisons = self.trace["livraisons"]
         if len(livraisons) != len(demandes):
@@ -147,6 +150,7 @@ class Verificateur:
             self.verifier_echec(livraison, demande, bilan, lu, prefixe)
 
     def compter_pas(self, numero: int) -> int:
+        """Nombre de pas de la trace rattachés à la demande numero."""
         nombre = 0
         for pas in self.trace["pas"]:
             if pas["demande"] == numero:
@@ -154,6 +158,7 @@ class Verificateur:
         return nombre
 
     def verifier_reussite(self, livraison: dict, bilan: dict, lu, prefixe: str) -> None:
+        """Réussite : pas de motif, CONSULTER < PRENDRE < DONNER, puis le choix du casier."""
         if livraison["motif_echec"] is not None:
             self.erreurs.append(f"{prefixe} : réussie mais motif_echec {livraison['motif_echec']!r}")
         if bilan["consulter"] is None or bilan["prendre"] is None or bilan["donner"] is None:
@@ -208,6 +213,7 @@ class Verificateur:
             self.verifier_inaccessible(self.sim.residents[demande["resident"]], motif, prefixe)
 
     def verifier_armoire_vide(self, bilan: dict, lu, prefixe: str) -> None:
+        """armoire vide : les 15 candidats sont vraiment vides et ont tous été vus dans la demande."""
         if lu is None:
             self.erreurs.append(f"{prefixe} : armoire vide sans émotion connue")
             return
@@ -219,6 +225,7 @@ class Verificateur:
                 self.erreurs.append(f"{prefixe} : armoire vide sans être passé devant {list(candidat)}")
 
     def verifier_inaccessible(self, cible, motif: str, prefixe: str) -> None:
+        """... inaccessible : aucun chemin sur la vraie grille vers une case voisine de cible."""
         # Le robot ne quitte jamais sa zone connexe : partir du départ revient à partir d'où il est.
         arrivees = cases_adjacentes(cible, (self.sim.hauteur, self.sim.largeur))
         chemin = plus_court_chemin(self.depart, arrivees, self.est_libre)
@@ -226,9 +233,11 @@ class Verificateur:
             self.erreurs.append(f"{prefixe} : {motif} alors qu'un chemin réel de {len(chemin) - 1} pas existe")
 
     def est_libre(self, pos: tuple[int, int]) -> bool:
+        """Case libre dans la réalité (pour le BFS de preuve)."""
         return self.sim.type_case(pos) == "libre"
 
     def verifier_resume(self) -> None:
+        """Le résumé = les comptes recalculés à partir des livraisons et des pas."""
         livraisons = self.trace["livraisons"]
         reussies = 0
         for livraison in livraisons:
