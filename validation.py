@@ -74,25 +74,17 @@ def valider_dictionnaire(dictionnaire: dict) -> None:
             if forme.strip() == "":
                 raise rio.ErreurFichier("Dictionnaire : chaque forme ne doit pas être vide dans chaque entrée")
 
-            if not forme.islower():
-                raise rio.ErreurFichier("Dictionnaire : chaque forme doit être en minuscules dans chaque entrée")
-
-            if not forme.isalpha():
-                raise rio.ErreurFichier("Dictionnaire : chaque forme doit être composée d'un seul mot dans chaque entrée")
-
-            if not forme.isascii():
-                raise rio.ErreurFichier("Dictionnaire : chaque forme doit être sans accents dans chaque entrée")
-
         if entree["emotion"] not in EMOTIONS:
             raise rio.ErreurFichier(f"Dictionnaire : 'emotion' doit être l'une des émotions {EMOTIONS} dans chaque entrée")
 
         if entree["intensite"] not in INTENSITES:
             raise rio.ErreurFichier(f"Dictionnaire : 'intensite' doit être l'une des intensités {INTENSITES} dans chaque entrée")
 
-        # Mots en double
+        # §5.6 : même mot dans deux entrées (répété dans une seule entrée, il est inoffensif)
         for forme in entree["formes"]:
             if forme in formes_vues:
-                raise rio.ErreurFichier(f"Dictionnaire : forme '{forme}' présente plusieurs fois")
+                raise rio.ErreurFichier(f"Dictionnaire : forme '{forme}' présente dans deux entrées")
+        for forme in entree["formes"]:
             formes_vues.add(forme)
 
 def valider_armoire(armoire: dict) -> None:

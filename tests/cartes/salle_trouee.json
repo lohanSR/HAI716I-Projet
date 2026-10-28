@@ -1,0 +1,59 @@
+{
+  "format": "robot-reconfort/carte",
+  "version": 1,
+  "nom": "salle_trouee",
+  "dimensions": {
+    "hauteur": 6,
+    "largeur": 10
+  },
+  "legende": {
+    "#": "mur",
+    ".": "libre",
+    "R": "depart du robot",
+    "A": "armoire",
+    "D": "dictionnaire",
+    "P": "resident"
+  },
+  "grille": [
+    "##########",
+    "#R.......#",
+    "#..A..D..#",
+    "#........#",
+    "#P......P#",
+    "##########"
+  ],
+  "depart_robot": [
+    1,
+    1
+  ],
+  "armoire": {
+    "position": [
+      2,
+      3
+    ]
+  },
+  "dictionnaire": {
+    "position": [
+      2,
+      6
+    ]
+  },
+  "residents": [
+    {
+      "id": "R1",
+      "nom": "Karim",
+      "position": [
+        4,
+        1
+      ]
+    },
+    {
+      "id": "R2",
+      "nom": "Léa",
+      "position": [
+        4,
+        8
+      ]
+    }
+  ]
+}

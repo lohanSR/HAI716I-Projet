@@ -1,0 +1,29 @@
+{
+  "format": "robot-reconfort/scenario",
+  "version": 1,
+  "nom": "scenario_resident_mure",
+  "carte": "resident_mure",
+  "armoire": "armoire_standard",
+  "demandes": [
+    {
+      "numero": 1,
+      "resident": "R2",
+      "message": "Je suis tellement seul."
+    },
+    {
+      "numero": 2,
+      "resident": "R1",
+      "message": "Je suis ravie de vous voir."
+    },
+    {
+      "numero": 3,
+      "resident": "R2",
+      "message": "Je suis furieux, personne ne vient."
+    },
+    {
+      "numero": 4,
+      "resident": "R1",
+      "message": "Je suis inquiète pour mon fils."
+    }
+  ]
+}

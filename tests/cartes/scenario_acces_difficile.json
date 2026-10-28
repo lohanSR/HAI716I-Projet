@@ -1,0 +1,24 @@
+{
+  "format": "robot-reconfort/scenario",
+  "version": 1,
+  "nom": "scenario_acces_difficile",
+  "carte": "acces_difficile",
+  "armoire": "armoire_standard",
+  "demandes": [
+    {
+      "numero": 1,
+      "resident": "R1",
+      "message": "Je suis un peu perplexe."
+    },
+    {
+      "numero": 2,
+      "resident": "R2",
+      "message": "Merci, j'ai confiance en vous."
+    },
+    {
+      "numero": 3,
+      "resident": "R1",
+      "message": "Je suis en colère."
+    }
+  ]
+}

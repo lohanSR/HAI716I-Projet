@@ -1,0 +1,52 @@
+{
+  "format": "robot-reconfort/carte",
+  "version": 1,
+  "nom": "impasses",
+  "dimensions": {
+    "hauteur": 7,
+    "largeur": 22
+  },
+  "legende": {
+    "#": "mur",
+    ".": "libre",
+    "R": "depart du robot",
+    "A": "armoire",
+    "D": "dictionnaire",
+    "P": "resident"
+  },
+  "grille": [
+    "######################",
+    "#D.................R.#",
+    "#.##.##.##.##.##.##..#",
+    "#.##.##.##.##.##.##..#",
+    "##########P#########.#",
+    "#A...................#",
+    "######################"
+  ],
+  "depart_robot": [
+    1,
+    19
+  ],
+  "armoire": {
+    "position": [
+      5,
+      1
+    ]
+  },
+  "dictionnaire": {
+    "position": [
+      1,
+      1
+    ]
+  },
+  "residents": [
+    {
+      "id": "R1",
+      "nom": "Denise",
+      "position": [
+        4,
+        10
+      ]
+    }
+  ]
+}

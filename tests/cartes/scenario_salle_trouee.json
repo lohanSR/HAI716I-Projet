@@ -1,0 +1,49 @@
+{
+  "format": "robot-reconfort/scenario",
+  "version": 1,
+  "nom": "scenario_salle_trouee",
+  "carte": "salle_trouee",
+  "armoire": "armoire_trouee",
+  "demandes": [
+    {
+      "numero": 1,
+      "resident": "R1",
+      "message": "Je suis triste."
+    },
+    {
+      "numero": 2,
+      "resident": "R2",
+      "message": "C'est insupportable."
+    },
+    {
+      "numero": 3,
+      "resident": "R1",
+      "message": "Je suis sidéré."
+    },
+    {
+      "numero": 4,
+      "resident": "R2",
+      "message": "Je suis inquiète."
+    },
+    {
+      "numero": 5,
+      "resident": "R1",
+      "message": "Je suis heureux."
+    },
+    {
+      "numero": 6,
+      "resident": "R2",
+      "message": "Bonjour."
+    },
+    {
+      "numero": 7,
+      "resident": "R1",
+      "message": "Je suis furieux."
+    },
+    {
+      "numero": 8,
+      "resident": "R2",
+      "message": "Je suis calme."
+    }
+  ]
+}

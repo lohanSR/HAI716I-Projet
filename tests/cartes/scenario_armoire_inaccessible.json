@@ -1,0 +1,24 @@
+{
+  "format": "robot-reconfort/scenario",
+  "version": 1,
+  "nom": "scenario_armoire_inaccessible",
+  "carte": "armoire_inaccessible",
+  "armoire": "armoire_standard",
+  "demandes": [
+    {
+      "numero": 1,
+      "resident": "R1",
+      "message": "Je me sens seul."
+    },
+    {
+      "numero": 2,
+      "resident": "R1",
+      "message": "Bonjour, quelle heure est-il ?"
+    },
+    {
+      "numero": 3,
+      "resident": "R1",
+      "message": "Je suis heureux."
+    }
+  ]
+}
