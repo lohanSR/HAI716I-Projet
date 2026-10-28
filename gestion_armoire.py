@@ -1,116 +1,77 @@
+from __future__ import annotations
+
 from logique import calculer_chemin_casier, determiner_repli, generer_casiers_candidats
+
 
 class EtatArmoire:
     """
-    Représente l'état de l'armoire
+    Fouille de l'armoire, une action par tick : mémoire des casiers vus pendant la demande en cours
+    Le sélecteur n'est pas stocké ici : c'est agent.casier (une seule source de vérité)
     """
-    
-    def __init__(self, casierDepart):
-        self.positionSelecteur = tuple(casierDepart)
+
+    def __init__(self, emotions: list[str], intensites: list[str]):
+        self.emotions = emotions
+        self.intensites = intensites
+        self.candidats = []
+        self.indexEmotionDemandee = None
+        self.indexIntensiteDemandee = None
+        # casier → objet vu, ou None = vu vide ; casier absent = pas encore vu
         self.memoire = {}
 
-    def appliquer_mouvement_casier(self, direction: str) -> tuple[int, int]:
+    def nouvelle_fouille(self, emotionDemandee: str, intensiteDemandee: str) -> None:
         """
-        Applique un mouvement à une position de casier
+        Commence la fouille d'une demande : candidats triés (§6.2) et mémoire vidée
         """
-        ligne, colonne = self.positionSelecteur
-
-        if direction == "N":
-            ligne -= 1
-        elif direction == "S":
-            ligne += 1
-        elif direction == "E":
-            colonne = (colonne + 1) % 8
-        elif direction == "O":
-            colonne = (colonne - 1) % 8
-        else:
-            raise ValueError(f"Direction inconnue : {direction}")
-
-        if ligne < 0 or ligne > 2:
-            raise ValueError("Déplacement vertical hors de l'armoire")
-
-        return (ligne, colonne)
-
-    def deplacer_selecteur(self, cible: tuple[int, int], observer_casier) -> list[dict]:
-        """
-        Déplace le sélecteur jusqu'au casier cible et mémorise le contenu des nouveaux casiers rencontrés
-        Retourne les étapes du déplacement avec la direction, le casier courant et son contenu avant chaque action.
-        """
-        chemin = calculer_chemin_casier(self.positionSelecteur, cible)
-        etapes = []
-
-        for direction in chemin:
-            casierAvant = self.positionSelecteur
-
-            if casierAvant not in self.memoire:
-                self.memoire[casierAvant] = observer_casier(casierAvant)
-
-            contenuAvant = self.memoire[casierAvant]
-
-            etapes.append({
-                "direction": direction,
-                "casier": casierAvant,
-                "contenu": contenuAvant
-            })
-
-            self.positionSelecteur = self.appliquer_mouvement_casier(direction)
-
-        if self.positionSelecteur not in self.memoire:
-            contenu = observer_casier(self.positionSelecteur)
-            self.memoire[self.positionSelecteur] = contenu
-
-        return etapes
-
-    def fouiller_armoire(self, emotionDemandee: str, intensiteDemandee: str, emotions: list[str], intensites: list[str], observer_casier) -> dict:
-        """
-        Fouille l'armoire en parcourant les casiers candidats dans l'ordre de priorité défini par la roue des émotions
-
-        Retourne le premier objet trouvé correspondant à l'émotion et l'intensité demandées, ainsi que les étapes effectuées
-        """
-        candidats = generer_casiers_candidats(
+        self.candidats = generer_casiers_candidats(
             emotionDemandee,
             intensiteDemandee,
-            emotions,
-            intensites
+            self.emotions,
+            self.intensites
         )
+        self.indexEmotionDemandee = self.emotions.index(emotionDemandee)
+        self.indexIntensiteDemandee = self.intensites.index(intensiteDemandee)
+        # §6.2 : un repli exige d'être passé devant les casiers prioritaires pendant CETTE demande
+        self.memoire = {}
 
-        indexEmotionDemandee = emotions.index(emotionDemandee)
-        indexIntensiteDemandee = intensites.index(intensiteDemandee)
+    def memoriser(self, casier: tuple[int, int], contenu: str | None) -> None:
+        """
+        Note le contenu constaté du casier sous le sélecteur
+        """
+        self.memoire[tuple(casier)] = contenu
 
-        toutesEtapes = []
+    def cible(self) -> tuple[int, int] | None:
+        """
+        Premier candidat pas encore vu vide ; None si les 15 candidats ont été vus vides
+        """
+        for candidat in self.candidats:
+            if candidat not in self.memoire or self.memoire[candidat] is not None:
+                return candidat
+        return None
 
-        for candidat in candidats:
-            etapes = self.deplacer_selecteur(
-                candidat,
-                observer_casier
-            )
+    def prochaine_action(self, casier: tuple[int, int]) -> tuple[str, str]:
+        """
+        Action du prochain tick : ("CHERCHER", direction), ("PRENDRE", objet) ou ("ECHEC", "armoire vide")
+        Le casier sous le sélecteur doit déjà être mémorisé
+        """
+        cible = self.cible()
+        if cible is None:
+            return ("ECHEC", "armoire vide")
 
-            toutesEtapes.extend(etapes)
-            contenu = self.memoire[candidat]
+        casier = tuple(casier)
+        if cible == casier:
+            return ("PRENDRE", self.memoire[cible])
 
-            if contenu is not None:
-                ligne, colonne = candidat
+        chemin = calculer_chemin_casier(casier, cible)
+        return ("CHERCHER", chemin[0])
 
-                repli = determiner_repli(
-                    indexEmotionDemandee,
-                    indexIntensiteDemandee,
-                    colonne,
-                    ligne
-                )
-
-                return {
-                    "succes": True,
-                    "objet": contenu,
-                    "casier": candidat,
-                    "repli": repli,
-                    "etapes": toutesEtapes
-                }
-
-        return {
-            "succes": False,
-            "objet": None,
-            "casier": None,
-            "repli": "aucun",
-            "motif": "armoire vide",
-            "etapes": toutesEtapes
-        }
+    def repli(self, casier: tuple[int, int]) -> str:
+        """
+        Étiquette de repli du casier choisi
+        """
+        ligne, colonne = casier
+        return determiner_repli(
+            self.indexEmotionDemandee,
+            self.indexIntensiteDemandee,
+            colonne,
+            ligne
+        )

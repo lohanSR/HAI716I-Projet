@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from planification import DIRECTIONS
 
 TRAVERSABLES = ("libre", "inconnu")
@@ -49,3 +51,7 @@ class CarteMentale:
     def est_traversable(self, pos: tuple[int, int]) -> bool:
         """Hypothèse optimiste (annexe B.5) : une case inconnue est supposée libre."""
         return self.type_case(pos) in TRAVERSABLES
+
+    def est_connue_libre(self, pos: tuple[int, int]) -> bool:
+        """Hypothèse pessimiste : seules les cases déjà vues libres sont traversables."""
+        return self.type_case(pos) == "libre"

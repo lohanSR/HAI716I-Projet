@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 DIRECTIONS = {"N": (-1, 0), "S": (1, 0), "E": (0, 1), "O": (0, -1)}
 
 SYMBOLES = {
