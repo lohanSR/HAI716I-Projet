@@ -1,0 +1,24 @@
+{
+  "format": "robot-reconfort/carte",
+  "version": 1,
+  "nom": "appartement_01",
+  "dimensions": {
+    "hauteur": 9,
+    "largeur": 13
+  },
+  "legende": {
+    "#": "mur",
+    ".": "libre",
+    "R": "depart du robot",
+    "A": "armoire",
+    "D": "dictionnaire",
+    "P": "resident"
+  },
+  "grille": [
+    "#############",
+    "#......#....#",
+    "#...........#",
+    "#..P...#....#",
+    "#.#########.#",
+    "#......#....#",
+    "#R..A..#..
