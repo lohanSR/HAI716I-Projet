@@ -27,7 +27,9 @@ Dépendances : *aucune*, ou la liste et comment les installer.
 | Fichier | Rôle |
 |---|---|
 | `agent.py` | point d'entrée, boucle de décision |
-| `…` | … |
+| `logique.py` | Reconnaissance des émotions dans les messages, classe les casiers par priorité et calcule les chemins du sélecteur |
+| `gestion_armoire.py` | Gère les déplacements du sélecteur, mémorise les casiers observés et recherche un objet en respectant l'ordre de priorité |
+| `validation.py` | Vérifie les champs, les types et la cohérence des fichiers JSON (dictionnaire, armoire, carte et scénario) |
 
 ## État
 
