@@ -171,6 +171,8 @@ class Agent:
         while True:
             action, argument = self.etat_armoire.prochaine_action(self.casier)
             if action == "ECHEC":
+                # §6.2 : le dernier casier n'est vu qu'après le dernier CHERCHER ; ce pas le journalise dans la demande.
+                self.agir("ATTENDRE")
                 return argument
             if self.afficher:
                 self.dessiner(None, f"armoire : casier {list(self.casier)} → {action} {argument}")
