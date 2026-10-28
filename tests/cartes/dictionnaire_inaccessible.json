@@ -1,0 +1,51 @@
+{
+  "format": "robot-reconfort/carte",
+  "version": 1,
+  "nom": "dictionnaire_inaccessible",
+  "dimensions": {
+    "hauteur": 6,
+    "largeur": 12
+  },
+  "legende": {
+    "#": "mur",
+    ".": "libre",
+    "R": "depart du robot",
+    "A": "armoire",
+    "D": "dictionnaire",
+    "P": "resident"
+  },
+  "grille": [
+    "############",
+    "#R.....#...#",
+    "#.A....#.D.#",
+    "#......#...#",
+    "#..P...#####",
+    "############"
+  ],
+  "depart_robot": [
+    1,
+    1
+  ],
+  "armoire": {
+    "position": [
+      2,
+      2
+    ]
+  },
+  "dictionnaire": {
+    "position": [
+      2,
+      9
+    ]
+  },
+  "residents": [
+    {
+      "id": "R1",
+      "nom": "Inès",
+      "position": [
+        4,
+        3
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "format": "robot-reconfort/scenario",
+  "version": 1,
+  "nom": "scenario_grande_plate",
+  "carte": "grande_plate",
+  "armoire": "armoire_standard",
+  "demandes": [
+    {
+      "numero": 1,
+      "resident": "R1",
+      "message": "Je suis tellement heureuse aujourd'hui !"
+    },
+    {
+      "numero": 2,
+      "resident": "R3",
+      "message": "Je suis inquiet pour demain."
+    },
+    {
+      "numero": 3,
+      "resident": "R2",
+      "message": "Quelle surprise, je suis sidéré."
+    },
+    {
+      "numero": 4,
+      "resident": "R1",
+      "message": "Je me sens seule le soir."
+    },
+    {
+      "numero": 5,
+      "resident": "R3",
+      "message": "C'est vraiment insupportable, ce bruit."
+    },
+    {
+      "numero": 6,
+      "resident": "R2",
+      "message": "Je suis furieux contre le voisin."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "format": "robot-reconfort/scenario",
+  "version": 1,
+  "nom": "scenario_impasses",
+  "carte": "impasses",
+  "armoire": "armoire_standard",
+  "demandes": [
+    {
+      "numero": 1,
+      "resident": "R1",
+      "message": "Je suis triste depuis ce matin."
+    },
+    {
+      "numero": 2,
+      "resident": "R1",
+      "message": "J'attends ma fille, j'ai hâte."
+    },
+    {
+      "numero": 3,
+      "resident": "R1",
+      "message": "Tout est calme, je suis content."
+    }
+  ]
+}
