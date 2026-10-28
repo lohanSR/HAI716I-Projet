@@ -8,7 +8,8 @@ import reconfort_io as rio
 import validation
 from action import executer_action
 from decision import est_adjacent, planifier, premiere_direction
-from logique import calculer_chemin_casier, trouver_emotion
+from gestion_armoire import EtatArmoire
+from logique import trouver_emotion
 from memoire import CarteMentale
 from perception import percevoir
 from simulateur import ActionIllegale, Simulateur
@@ -63,6 +64,7 @@ class Agent:
         self.emotions = armoire["emotions"]
         self.intensites = armoire["intensites"]
         self.nb_colonnes_armoire = len(armoire["emotions"])
+        self.etat_armoire = EtatArmoire(self.emotions, self.intensites)
         self.objet_porte = None
 
         self.sim = sim
@@ -106,6 +108,7 @@ class Agent:
             "emotion": None,
             "intensite": None,
             "casier_choisi": None,
+            "repli": "aucun",
             "objet": None,
         }
         motif = self.servir(demande, dictionnaire, livraison)
@@ -115,7 +118,7 @@ class Agent:
             emotion=livraison["emotion"],
             intensite=livraison["intensite"],
             casier_choisi=livraison["casier_choisi"],
-            repli="aucun",
+            repli=livraison["repli"],
             objet=livraison["objet"],
             succes=motif is None,
             motif_echec=motif,
@@ -135,9 +138,9 @@ class Agent:
         if not self.aller_vers(self.pos_armoire):
             return "armoire inaccessible"
         pos_resident = self.residents[demande["resident"]]
-        # Avant PRENDRE : si la carte mentale prouve déjà que le résident est muré, on ne prend rien.
-        if planifier(self.memoire, self.position, pos_resident) is None:
-            return "resident inaccessible"
+        motif = self.verifier_resident(pos_resident)
+        if motif is not None:
+            return motif
         motif = self.prendre_objet(livraison)
         if motif is not None:
             return motif
@@ -147,18 +150,37 @@ class Agent:
         self.agir("DONNER", self.objet_porte)
         return None
 
-    def prendre_objet(self, livraison: dict) -> str | None:
-        """Provisoire (remplacé à l'Étape 5 par la fouille avec repli) : casier exact seulement."""
-        ligne = self.intensites.index(livraison["intensite"])
-        colonne = self.emotions.index(livraison["emotion"])
-        for direction in calculer_chemin_casier(self.casier, (ligne, colonne)):
-            self.agir("CHERCHER", direction)
-        if self.contenu_casier is None:
-            return "armoire vide"
-        livraison["casier_choisi"] = self.casier
-        livraison["objet"] = self.contenu_casier
-        self.agir("PRENDRE", self.contenu_casier)
+    def verifier_resident(self, pos_resident) -> str | None:
+        """Avant PRENDRE (aucune action ne permet de poser un objet) : n'avancer que si le résident est atteignable à coup sûr."""
+        if planifier(self.memoire, self.position, pos_resident) is None:
+            return "resident inaccessible"
+        if planifier(self.memoire, self.position, pos_resident, True) is not None:
+            return None
+        # Incertain : on explore jusqu'au résident (ou jusqu'à la preuve qu'il est muré), puis on revient.
+        if not self.aller_vers(pos_resident):
+            return "resident inaccessible"
+        if not self.aller_vers(self.pos_armoire):
+            return "armoire inaccessible"
         return None
+
+    def prendre_objet(self, livraison: dict) -> str | None:
+        """§6.2, une action par tick : candidats dans l'ordre de priorité, PRENDRE dans le premier trouvé garni."""
+        self.etat_armoire.nouvelle_fouille(livraison["emotion"], livraison["intensite"])
+        # Le robot est devant l'armoire : le casier sous le sélecteur est déjà visible.
+        self.etat_armoire.memoriser(self.casier, self.contenu_casier)
+        while True:
+            action, argument = self.etat_armoire.prochaine_action(self.casier)
+            if action == "ECHEC":
+                return argument
+            if self.afficher:
+                self.dessiner(None, f"armoire : casier {list(self.casier)} → {action} {argument}")
+            if action == "PRENDRE":
+                livraison["casier_choisi"] = self.casier
+                livraison["objet"] = argument
+                livraison["repli"] = self.etat_armoire.repli(self.casier)
+                self.agir("PRENDRE", argument)
+                return None
+            self.agir("CHERCHER", argument)
 
 
 def charger_entrees(
