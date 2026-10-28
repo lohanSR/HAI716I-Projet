@@ -14,7 +14,7 @@ from memoire import CarteMentale
 from perception import percevoir
 from simulateur import ActionIllegale, Simulateur
 
-EQUIPE = ["MAHDI Raouf", "SERR Lohan"]
+EQUIPE = ["MAHDI Abderaouf", "SERRE Lohan"]
 USAGE = (
     "usage : python agent.py <carte> <scenario> <dossier_donnees> <trace> [--afficher]"
 )
@@ -95,6 +95,7 @@ class Agent:
         return True
 
     def dessiner(self, chemin, message: str) -> None:
+        """Option --afficher : redessine la carte mentale avec t, la demande en cours et un message."""
         numero = None
         if self.demande is not None:
             numero = self.demande["numero"]
@@ -175,7 +176,9 @@ class Agent:
                 self.agir("ATTENDRE")
                 return argument
             if self.afficher:
-                self.dessiner(None, f"armoire : casier {list(self.casier)} → {action} {argument}")
+                self.dessiner(
+                    None, f"armoire : casier {list(self.casier)} → {action} {argument}"
+                )
             if action == "PRENDRE":
                 livraison["casier_choisi"] = self.casier
                 livraison["objet"] = argument
