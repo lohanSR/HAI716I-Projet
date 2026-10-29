@@ -22,12 +22,6 @@ Dépendances : *aucune* Le projet utilise uniquement la bibliothèque standard d
 
 Il est possible d'ajouter --afficher à la fin de la commande pour suivre les déplacements du robot dans le terminal.
 
-Pour vérifier une trace générée :
-
-```
-python verifier_trace.py <carte.json> <scenario.json> <dossier_donnees> <trace.json>
-```
-
 ## Tester
 
 ```
