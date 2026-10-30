@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 from planification import cases_adjacentes, plus_court_chemin, voisines

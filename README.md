@@ -18,7 +18,7 @@ Exemple :
 python agent.py cartes/appartement_01.json cartes/scenario_01.json donnees sortie.json
 ```
 
-Dépendances : *aucune* Le projet utilise uniquement la bibliothèque standard de Python
+Dépendances : *aucune*. Le projet utilise uniquement la bibliothèque standard de Python.
 
 Il est possible d'ajouter --afficher à la fin de la commande pour suivre les déplacements du robot dans le terminal.
 
@@ -45,7 +45,6 @@ Nous avons réalisé des tests automatisés. Ils vérifient notamment la navigat
 | `validation.py` | Vérifie les fichiers JSON avant le lancement |
 | `simulateur.py` | Gère l'environnement et vérifie les actions du robot |
 | `affichage.py` | Affiche la carte mentale dans le terminal |
-| `verifier_trace.py` | Vérifie que les actions enregistrées respectent les règles |
 | `reconfort_io.py` | Contient les fonctions de lecture et d'écriture des fichiers |
 | `tests/` | Contient les tests et les scénarios supplémentaires |
 
